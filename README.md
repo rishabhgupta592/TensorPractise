@@ -1,3 +1,3 @@
 # TensorPractise
 
-Basic guide to implement machine leanring algorith using tensor flow. 
+Basic guide to implement machine learning algorithm using tensor flow. 
