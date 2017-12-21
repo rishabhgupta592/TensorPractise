@@ -5,9 +5,12 @@
 
 import tensorflow as tf
 import pandas as pd
+import _pickle as pickle
 import numpy as np
 from sklearn.utils import shuffle
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.externals import joblib
+# >>>
 
 # Network param
 n_hidden1 = 128     # neurons in first hidden layer
@@ -24,6 +27,8 @@ def feature_extractor(data):
     print("Feature extraction started ...")
     count_vect = CountVectorizer()
     X_train_counts = count_vect.fit_transform(data)
+    # joblib.dump(count_vect.vocabulary_, 'feature.pkl')
+    pickle.dump(count_vect.vocabulary_, open("feature.pkl","wb"))
     return X_train_counts.toarray()
 
 
@@ -59,11 +64,11 @@ def neural_engine(train_x, train_y):
     train_x, test_x, train_y, test_y = train_test_split(train_x, train_y)
     n_input = len(train_x.columns)
     num_classes = len(train_y.columns)
-    X = tf.placeholder("float", [None, n_input])
+    X = tf.placeholder("float", [None, n_input],name='X')
     Y = tf.placeholder("float", [None, num_classes])
     # Construct model
     logits = neural_net(X, n_input, num_classes)
-    prediction = tf.nn.sigmoid(logits)
+    prediction = tf.nn.sigmoid(logits, name="prediction")
 
     loss_op = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=Y))
 
@@ -76,6 +81,7 @@ def neural_engine(train_x, train_y):
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))  # nothing but average kind of thing
 
     init = tf.global_variables_initializer()
+    saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(init)
 
@@ -94,6 +100,9 @@ def neural_engine(train_x, train_y):
         print("Test Accuracy", sess.run(accuracy, feed_dict={X:test_x, Y: test_y}))
         res = sess.run(prediction, feed_dict={X: train_x})
         res = pd.DataFrame(res)
+        save_path = saver.save(sess, "./models/text_classifier/model.ckpt")
+        print("Model saved in file: %s" % save_path)
+
     return res
 if __name__ == "__main__":
 
