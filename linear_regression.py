@@ -12,6 +12,7 @@ data = pd.read_csv("./data/linear_regression_data.csv")
 train_x = data['I']
 train_y = data['O']
 
+# Need to normalize data
 train_x = preprocessing.normalize([train_x], norm='l2')
 # train_x = train_x.reshape(1,1)
 # need to scale data

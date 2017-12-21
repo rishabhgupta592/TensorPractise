@@ -16,7 +16,7 @@
 # Fully connected Neural Net ==> Multilayer perceptron
 # With 2 Hidden layers
 
-# Again with MNIST data
+# On cancer data
 
 import tensorflow as tf
 import pandas as pd
@@ -76,7 +76,11 @@ init = tf.global_variables_initializer()
 
 
 # load training data
-data = pd.read_csv("./data/logistic_regression_data_3.csv")
+feature_names = ['clump_thickness', 'unif_cell_size', 'unif_cell_shape', 'marg_adhesion',
+                     'single_epith_cell_size', 'bare_nuclei', 'bland_chrom', 'norm_nucleoli', 'mitoses']
+column_names = feature_names + ['Actual class']
+
+data = pd.read_csv("./data/logistic_regression_data_3.csv", names=column_names)
 # shuffled_data = shuffle(data)
 # train_x = shuffled_data["i"].values.reshape(100,1)
 # train_y = shuffled_data["o"].values.reshape(100,1)
@@ -101,16 +105,8 @@ with tf.Session() as sess:
                   "{:.3f}".format(acc))
 
     print("Optimization Finished!")
-    # Calculate accuracy for MNIST test images
-    # print("Testing Accuracy:", \
-    #       sess.run(accuracy, feed_dict={X: mnist.test.images,
-    #                                     Y: mnist.test.labels}))
-
-    # for x in train_x:
-    #     x = x.reshape(1,1)
-    print(sess.run(prediction, feed_dict={X:train_x}))
+    # print(sess.run(prediction, feed_dict={X:train_x}))
     res = sess.run(prediction, feed_dict={X:train_x})
     res = pd.DataFrame(res)
-    train_x =  pd.DataFrame(train_x)
-    train_x.to_csv("odd_even_data.csv")
-    res.to_csv("odd_even_result.csv")
+    data['Predicted class'] = res
+    data.to_csv("logistin_neural_output.csv")
