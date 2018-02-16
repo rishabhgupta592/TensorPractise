@@ -13,8 +13,10 @@ def load_models(feature):
         X = graph.get_tensor_by_name("X:0")
         prediction = graph.get_tensor_by_name("prediction:0")
         print(sess.run(prediction, feed_dict={X:feature}))
-if __name__ == "__main__":
-    query = "Work Schedule Discover employees"
+        return sess.run(prediction, feed_dict={X:feature})
+
+
+def get_class(query):
     query = [query]
     # from sklearn.feature_extraction.text import CountVectorizer
     # count_vect = joblib.load('feature.pkl')
@@ -22,4 +24,9 @@ if __name__ == "__main__":
     X_train_counts = count_vect.fit_transform(query)
     feature = X_train_counts.toarray()
     # print(feature)
-    load_models(feature)
+    return load_models(feature)
+
+
+if __name__ == "__main__":
+    query = "Work Schedule Discover employees"
+    get_class(query)
